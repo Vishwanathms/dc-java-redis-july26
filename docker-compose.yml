@@ -9,8 +9,15 @@ services:
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: frontend
+      MYSQL_USER: frontend
+      MYSQL_PASSWORD: frontendpass
     depends_on:
       redis:
+        condition: service_healthy
+      mysql:
         condition: service_healthy
     networks:
       - app-net
@@ -26,7 +33,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "16379:6379"
     volumes:
       - redis-data:/data
     healthcheck:
@@ -45,9 +52,38 @@ services:
           cpus: "0.1"
           memory: 64M
 
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: frontend
+      MYSQL_USER: frontend
+      MYSQL_PASSWORD: frontendpass
+    ports:
+      - "13306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - app-net
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+
 networks:
   app-net:
     driver: bridge
 
 volumes:
   redis-data:
+  mysql-data:

@@ -5,8 +5,9 @@
     <title>Java Frontend + Redis</title>
 </head>
 <body>
-    <h1>Java Frontend + Redis</h1>
-    <p>This page has been viewed <strong th:text="${count}">0</strong> times.</p>
-    <p>Visit count is stored and incremented in Redis on every request.</p>
+    <h1>Java Frontend + Redis + MySQL</h1>
+    <p>Redis fast counter: <strong th:text="${redisCount}">0</strong> visits.</p>
+    <p>MySQL persisted visit log: <strong th:text="${mysqlCount}">0</strong> rows.</p>
+    <p>Every request increments the Redis counter and inserts a row into MySQL.</p>
 </body>
 </html>
